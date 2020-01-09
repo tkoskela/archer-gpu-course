@@ -93,11 +93,11 @@ if ( N%THREADSPERBLOCK != 0 ){
 
 
   /* CUDA decomposition */
-    dim3 blocksPerGrid(N/THREADSPERBLOCK,1,1);
-    dim3 threadsPerBlock(THREADSPERBLOCK,1,1);
+  dim3 blocksPerGrid(N/THREADSPERBLOCK,1,1);
+  dim3 threadsPerBlock(THREADSPERBLOCK,1,1);
 
-   printf("Blocks: %d %d %d\n",blocksPerGrid.x,blocksPerGrid.y,blocksPerGrid.z);
-   printf("Threads per block: %d %d %d\n",threadsPerBlock.x,threadsPerBlock.y,threadsPerBlock.z);
+  printf("Blocks: %d %d %d\n",blocksPerGrid.x,blocksPerGrid.y,blocksPerGrid.z);
+  printf("Threads per block: %d %d %d\n",threadsPerBlock.x,threadsPerBlock.y,threadsPerBlock.z);
 
 
   /*
@@ -117,16 +117,11 @@ if ( N%THREADSPERBLOCK != 0 ){
  
     cudaThreadSynchronize();
 
-
-    /* copy the output data from device to host */
-    cudaMemcpy(output, d_output, memSize, cudaMemcpyDeviceToHost);
-
-    /* copy this same data from host to input buffer on device */
-    /*  ready for the next iteration */ 
-    cudaMemcpy( d_input, output, memSize, cudaMemcpyHostToDevice);
-
+    cudaMemcpy(d_input, d_output, memSize, cudaMemcpyDeviceToDevice);
+    
   }
 
+  cudaMemcpy(output, d_input, memSize, cudaMemcpyDeviceToHost);
 
   end_time_inc_data = get_current_time();
 
@@ -143,16 +138,16 @@ if ( N%THREADSPERBLOCK != 0 ){
     /* perform stencil operation */
     for (y = 0; y < N; y++) {
       for (x = 0; x < N; x++) {
-	validate_output[y+1][x+1] = (input[y+1][x] + input[y+1][x+2] +
-				 input[y][x+1] + input[y+2][x+1] \
-				 - edge[y][x]) * 0.25;
+        validate_output[y+1][x+1] = (input[y+1][x] + input[y+1][x+2] +
+                                     input[y][x+1] + input[y+2][x+1]    \
+                                     - edge[y][x]) * 0.25;
       }
     }
     
     /* copy output back to input buffer */
     for (y = 0; y < N; y++) {
       for (x = 0; x < N; x++) {
-	input[y+1][x+1] = validate_output[y+1][x+1];
+        input[y+1][x+1] = validate_output[y+1][x+1];
       }
     }
   }
