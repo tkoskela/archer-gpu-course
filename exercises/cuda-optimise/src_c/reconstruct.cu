@@ -57,10 +57,10 @@ int main(int argc, char *argv[])
 
 
 
-#define THREADSPERBLOCK 256
+#define THREADSPERBLOCKDIM 16
 
-if ( N%THREADSPERBLOCK != 0 ){
-    printf("Error: THREADSPERBLOCK must exactly divide N\n");
+if ( N%THREADSPERBLOCKDIM != 0 ){
+    printf("Error: THREADSPERBLOCKDIM must exactly divide N\n");
     exit(1);
  }
 
@@ -93,8 +93,8 @@ if ( N%THREADSPERBLOCK != 0 ){
 
 
   /* CUDA decomposition */
-  dim3 blocksPerGrid(N/THREADSPERBLOCK,1,1);
-  dim3 threadsPerBlock(THREADSPERBLOCK,1,1);
+  dim3 threadsPerBlock(THREADSPERBLOCKDIM,THREADSPERBLOCKDIM,1);
+  dim3 blocksPerGrid(N/threadsPerBlock.x,N/threadsPerBlock.y,1);
 
   printf("Blocks: %d %d %d\n",blocksPerGrid.x,blocksPerGrid.y,blocksPerGrid.z);
   printf("Threads per block: %d %d %d\n",threadsPerBlock.x,threadsPerBlock.y,threadsPerBlock.z);
