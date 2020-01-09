@@ -14,7 +14,7 @@
 void checkCUDAError(const char*);
 
 /* The number of integer elements in the array */
-#define ARRAY_SIZE 256
+#define ARRAY_SIZE 4096
 
 /*
  * The number of CUDA blocks and threads per block to use.
@@ -23,16 +23,17 @@ void checkCUDAError(const char*);
  * THREADS_PER_BLOCK should be the array size
  */
 
-#define NUM_BLOCKS  1
-#define THREADS_PER_BLOCK 256
+#define NUM_BLOCKS  4
+#define THREADS_PER_BLOCK 1024
 
 /* The actual array negation kernel (basic single block version) */
 
 __global__ void negate(int * d_a) {
 
   /* Part 2B: negate an element of d_a */
-  int idx = threadIdx.x;
+  int idx = threadIdx.x + (blockIdx.x * blockDim.x);
   d_a[idx] = -1 * d_a[idx];
+  
 
 }
 
